@@ -58,6 +58,7 @@ function render(config) {
     .attr('class', CHART_NODE_CLASS)
     .attr('transform', `translate(${parentNode.x0}, ${parentNode.y0})`)
     .on('click', onClick(config))
+    .on('mouseup', () => console.log("woah wowww!"))
 
   // Person Card Shadow
   nodeEnter
@@ -93,26 +94,27 @@ function render(config) {
   // Person's Name
   nodeEnter
     .append('text')
-    .attr('class', PERSON_NAME_CLASS)
+    .attr('class', PERSON_NAME_CLASS + ' unedited')
     .attr('x', namePos.x)
     .attr('y', namePos.y)
     .attr('dy', '.3em')
     .style('cursor', 'pointer')
     .style('fill', nameColor)
     .style('font-size', 16)
-    .text(d => d.person.name)
+    .text(d => d.name)
+    // .text(d => d.person.name + "this is new")
 
   // Person's Title
-  nodeEnter
-    .append('text')
-    .attr('class', PERSON_TITLE_CLASS + ' unedited')
-    .attr('x', namePos.x)
-    .attr('y', namePos.y + nodePaddingY * 1.2)
-    .attr('dy', '0.1em')
-    .style('font-size', 14)
-    .style('cursor', 'pointer')
-    .style('fill', titleColor)
-    .text(d => d.person.title)
+  // nodeEnter
+  //   .append('text')
+  //   .attr('class', PERSON_TITLE_CLASS + ' unedited')
+  //   .attr('x', namePos.x)
+  //   .attr('y', namePos.y + nodePaddingY * 1.2)
+  //   .attr('dy', '0.1em')
+  //   .style('font-size', 14)
+  //   .style('cursor', 'pointer')
+  //   .style('fill', titleColor)
+  //   .text(d => d.person.title + "hello world test")
 
   const heightForTitle = 45 // getHeightForText(d.person.title)
 
@@ -127,39 +129,49 @@ function render(config) {
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
-    .text(helpers.getTextForTitle)
+    .text('5')
+    // .text(helpers.getTextForTitle)
 
   // Person's Avatar
+  // nodeEnter
+  //   .append('image')
+  //   .attr('width', avatarWidth)
+  //   .attr('height', avatarWidth)
+  //   .attr('x', nodePaddingX)
+  //   .attr('y', nodePaddingY)
+  //   .attr('stroke', borderColor)
+  //   .attr('src', d => d.person.avatar)
+  //   .attr('xlink:href', d => d.person.avatar)
+  //   .attr('clip-path', 'url(#avatarClip)')
+
   nodeEnter
-    .append('image')
-    .attr('width', avatarWidth)
-    .attr('height', avatarWidth)
-    .attr('x', nodePaddingX)
-    .attr('y', nodePaddingY)
-    .attr('stroke', borderColor)
-    .attr('src', d => d.person.avatar)
-    .attr('xlink:href', d => d.person.avatar)
-    .attr('clip-path', 'url(#avatarClip)')
+    .append('circle')
+    .attr('cx', 33)
+    .attr('cy', 40)
+    .attr('r', '20')
+    .attr('fill', 'gray')
 
   // Person's Department
   nodeEnter
     .append('text')
-    .attr('class', getDepartmentClass)
+    // .attr('class', getDepartmentClass)
     .attr('x', 34)
-    .attr('y', avatarWidth + nodePaddingY * 1.2)
+    .attr('y', 33)
     .attr('dy', '.9em')
-    .style('cursor', 'pointer')
-    .style('fill', titleColor)
+    // .style('cursor', 'pointer')
+    .style('fill', 'white')
     .style('font-weight', 600)
-    .style('font-size', 8)
+    .style('font-size', 16)
     .attr('text-anchor', 'middle')
-    .text(helpers.getTextForDepartment)
+    .text('IT')
+    // .text(helpers.getTextForDepartment)
 
   // Person's Link
   const nodeLink = nodeEnter
     .append('a')
     .attr('class', PERSON_LINK_CLASS)
-    .attr('xlink:href', d => d.person.link || 'https://lattice.com')
+    // .attr('xlink:href', d => d.person.link || 'https://lattice.com')
+    .attr('xlink:href', d => 'https://lattice.com')
     .on('click', datum => {
       d3.event.stopPropagation()
       // TODO: fire link click handler
@@ -199,7 +211,8 @@ function render(config) {
   // Wrap the title texts
   const wrapWidth = 140
 
-  svg.selectAll('text.unedited.' + PERSON_TITLE_CLASS).call(wrapText, wrapWidth)
+  // svg.selectAll('text.unedited.' + PERSON_TITLE_CLASS).call(wrapText, wrapWidth)
+  svg.selectAll('text.unedited.' + PERSON_NAME_CLASS).call(wrapText, wrapWidth)
 
   // Render lines connecting nodes
   renderLines(config)

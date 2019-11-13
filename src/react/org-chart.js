@@ -1,24 +1,21 @@
-const { createElement, PureComponent } = require('react')
+const { createElement, useEffect } = require('react')
 const { init } = require('../chart')
 
-class OrgChart extends PureComponent {
-  render() {
-    const { id } = this.props
+const OrgChart = ({ id = 'react-org-chart', tree, nodeStyles, ...options }) => {
 
-    return createElement('div', {
-      id
-    })
-  }
+  useEffect(() => {
+    init({ id: `#${id}`, data: tree, ...options})
+  }, [])
 
-  static defaultProps = {
-    id: 'react-org-chart'
-  }
-
-  componentDidMount() {
-    const { id, tree, ...options } = this.props
-
-    init({ id: `#${id}`, data: tree, ...options })
-  }
+  return createElement('div', id);
 }
 
 module.exports = OrgChart
+
+// const nodeStyles = {
+//   shape: 'rect',
+//   width: 240,
+//   height: 120,
+  
+// }
+
