@@ -217,8 +217,23 @@ function render(config) {
   .attr('stroke', "transparent")
   .attr('rx', nodeBorderRadius)
   .attr('ry', nodeBorderRadius)
-  .on('mouseover', onMouseOverNode)
-  .on('mouseout', onMouseOutNode)
+  .on('mouseover', (datum) => {
+    onMouseOverNode(datum, d3.event);
+    // console.log("here!")
+    // console.log("d3:", d3)
+    // console.log("this:", this)
+    // console.log("d3.event.target:", d3.event.target)
+    d3.select(d3.event.target).style('stroke', 'red')
+  })
+  .on('mouseout', (datum) => {
+    onMouseOutNode(datum, d3.event)
+    d3.select(d3.event.target).style('stroke', 'transparent')
+  })
+  // .on('mouseover', () => {
+  //   console.log("here!")
+  //   console.log("d3:", d3)
+  //   d3.select(this).style({stroke: 'red'})
+  // })
 
   // Transition nodes to their new position.
   const nodeUpdate = node

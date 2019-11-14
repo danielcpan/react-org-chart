@@ -9,7 +9,6 @@ function onClick(config = {}) {
   return datum => {
     if (onPersonClick) {
       const result = onPersonClick(datum, d3.event)
-      // console.log("d3.event", d3.event)
 
       // If the `onPersonClick` handler returns `false`
       // Cancel the rest of this click handler
@@ -18,6 +17,7 @@ function onClick(config = {}) {
       }
     }
 
+    console.log("datum:", datum);
     // If this person doesn't have children but `hasChild` is true,
     // attempt to load using the `loadChildren` config function
     if (!datum.children && !datum._children && datum.hasChild) {
