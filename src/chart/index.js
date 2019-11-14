@@ -31,7 +31,8 @@ function init(options) {
     nodeWidth,
     nodeHeight,
     nodeSpacing,
-    shouldResize
+    shouldResize,
+    nodeProps
   } = config
 
   // Calculate how many pixel nodes to be spaced based on the
@@ -104,24 +105,24 @@ function init(options) {
   config.svgroot = svgroot
   config.render = render
 
-  // Defined zoom behavior
-  const zoom = d3.behavior
-    .zoom()
-    // Define the [zoomOutBound, zoomInBound]
-    .scaleExtent([0.4, 2])
-    .duration(50)
-    .on('zoom', renderUpdate(config))
+  // // Defined zoom behavior
+  // const zoom = d3.behavior
+  //   .zoom()
+  //   // Define the [zoomOutBound, zoomInBound]
+  //   .scaleExtent([0.4, 2])
+  //   .duration(50)
+  //   .on('zoom', renderUpdate(config))
 
-  // Attach zoom behavior to the svg root
-  svgroot.call(zoom)
+  // // Attach zoom behavior to the svg root
+  // svgroot.call(zoom)
 
-  // Define the point of origin for zoom transformations
-  zoom.translate([
-    parseInt(
-      childrenWidth + (elemWidth - childrenWidth * 2) / 2 - margin.left / 2
-    ),
-    20
-  ])
+  // // Define the point of origin for zoom transformations
+  // zoom.translate([
+  //   parseInt(
+  //     childrenWidth + (elemWidth - childrenWidth * 2) / 2 - margin.left / 2
+  //   ),
+  //   20
+  // ])
 
   // Add listener for when the browser or parent node resizes
   const resize = () => {

@@ -9,6 +9,7 @@ function onClick(config = {}) {
   return datum => {
     if (onPersonClick) {
       const result = onPersonClick(datum, d3.event)
+      // console.log("d3.event", d3.event)
 
       // If the `onPersonClick` handler returns `false`
       // Cancel the rest of this click handler

@@ -30,7 +30,10 @@ function render(config) {
     lineDepthY,
     treeData,
     sourceNode,
-    onPersonLinkClick
+    onPersonLinkClick,
+    onMouseOverNode,
+    onMouseOutNode,
+    nodeProps
   } = config
 
   // Compute the new tree layout.
@@ -58,7 +61,6 @@ function render(config) {
     .attr('class', CHART_NODE_CLASS)
     .attr('transform', `translate(${parentNode.x0}, ${parentNode.y0})`)
     .on('click', onClick(config))
-    .on('mouseup', () => console.log("woah wowww!"))
 
   // Person Card Shadow
   nodeEnter
@@ -76,6 +78,7 @@ function render(config) {
   // Person Card Container
   nodeEnter
     .append('rect')
+    // .attr('class', 'org-chart-container')
     .attr('width', nodeWidth)
     .attr('height', nodeHeight)
     .attr('id', d => d.id)
@@ -101,7 +104,7 @@ function render(config) {
     .style('cursor', 'pointer')
     .style('fill', nameColor)
     .style('font-size', 16)
-    .text(d => d.name)
+    .text(d => d.nodeProps.primaryText)
     // .text(d => d.person.name + "this is new")
 
   // Person's Title
@@ -123,13 +126,28 @@ function render(config) {
     .append('text')
     .attr('class', PERSON_REPORTS_CLASS)
     .attr('x', namePos.x)
-    .attr('y', namePos.y + nodePaddingY + heightForTitle)
+    // .attr('y', namePos.y + nodePaddingY + heightForTitle)
+    .attr('y', 50)
     .attr('dy', '.9em')
     .style('font-size', 14)
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
-    .text('5')
+    .text(d => `${Object.keys(d.SOPIds).length} SOPs`)
+
+  // Person's Reports
+  nodeEnter
+    .append('text')
+    .attr('class', PERSON_REPORTS_CLASS)
+    .attr('x', 130)
+    // .attr('y', namePos.y + nodePaddingY + heightForTitle)
+    .attr('y', 50)
+    .attr('dy', '.9em')
+    .style('font-size', 14)
+    .style('font-weight', 500)
+    .style('cursor', 'pointer')
+    .style('fill', reportsColor)
+    .text(d => `${Object.keys(d.userIds).length} Users`)
     // .text(helpers.getTextForTitle)
 
   // Person's Avatar
@@ -163,7 +181,10 @@ function render(config) {
     .style('font-weight', 600)
     .style('font-size', 16)
     .attr('text-anchor', 'middle')
-    .text('IT')
+    .text(d => d.nodeProps.primaryText
+      .split(" ")
+      .map(el => el.charAt(0).toUpperCase())
+      .join(""))
     // .text(helpers.getTextForDepartment)
 
   // Person's Link
@@ -171,8 +192,9 @@ function render(config) {
     .append('a')
     .attr('class', PERSON_LINK_CLASS)
     // .attr('xlink:href', d => d.person.link || 'https://lattice.com')
-    .attr('xlink:href', d => 'https://lattice.com')
+    // .attr('xlink:href', d => 'https://lattice.com')
     .on('click', datum => {
+      console.log("d3.event:", d3.event)
       d3.event.stopPropagation()
       // TODO: fire link click handler
       if (onPersonLinkClick) {
@@ -185,6 +207,18 @@ function render(config) {
     x: nodeWidth - 28,
     y: nodeHeight - 28
   })
+
+  // Mouse Event Container
+  nodeEnter
+  .append('rect')
+  .attr('width', nodeWidth)
+  .attr('height', nodeHeight)
+  .attr('fill', "transparent")
+  .attr('stroke', "transparent")
+  .attr('rx', nodeBorderRadius)
+  .attr('ry', nodeBorderRadius)
+  .on('mouseover', onMouseOverNode)
+  .on('mouseout', onMouseOutNode)
 
   // Transition nodes to their new position.
   const nodeUpdate = node
