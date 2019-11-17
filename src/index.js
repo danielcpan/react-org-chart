@@ -1,6 +1,6 @@
-const OrgChart = require('./react/org-chart')
-const { init } = require('./chart')
+const OrgChart = require('./react/org-chart');
+const { init } = require('./chart');
 
-OrgChart.init = init
+OrgChart.init = init;
 
-module.exports = OrgChart
+module.exports = OrgChart;

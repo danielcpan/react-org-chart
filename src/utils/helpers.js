@@ -1,18 +1,18 @@
 module.exports = {
   getTextForTitle,
   getTextForDepartment,
-  getCursorForNode
-}
+  getCursorForNode,
+};
 
 function getTextForTitle(datum) {
   if (!datum.person || !datum.person.totalReports) {
-    return ''
+    return '';
   }
 
-  const { person: { totalReports } } = datum
-  const pluralEnding = totalReports > 1 ? 's' : ''
+  const { person: { totalReports } } = datum;
+  const pluralEnding = totalReports > 1 ? 's' : '';
 
-  return `${totalReports} report${pluralEnding}`
+  return `${totalReports} report${pluralEnding}`;
 }
 
 const departmentAbbrMap = {
@@ -26,25 +26,25 @@ const departmentAbbrMap = {
   Communications: 'comms',
   Product: 'prod',
   People: 'people',
-  Sales: 'sales'
-}
+  Sales: 'sales',
+};
 
 function getTextForDepartment(datum) {
   if (!datum.person.department) {
-    return ''
+    return '';
   }
 
-  const { department } = datum.person
+  const { department } = datum.person;
 
   if (departmentAbbrMap[department]) {
-    return departmentAbbrMap[department].toUpperCase()
+    return departmentAbbrMap[department].toUpperCase();
   }
 
-  return datum.person.department.substring(0, 3).toUpperCase()
+  return datum.person.department.substring(0, 3).toUpperCase();
 }
 
 function getCursorForNode(datum) {
   return datum.children || datum._children || datum.hasChild
     ? 'pointer'
-    : 'default'
+    : 'default';
 }

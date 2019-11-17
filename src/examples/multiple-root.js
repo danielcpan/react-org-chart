@@ -1,5 +1,6 @@
-const fakeData = require('../utils/fake-data')
-const { init } = require('../chart')
-const { children } = fakeData()
+const fakeData = require('../utils/fake-data');
+const { init } = require('../chart');
 
-init({ id: '#root', data: { children }, lineType: 'angle' })
+const { children } = fakeData();
+
+init({ id: '#root', data: { children }, lineType: 'angle' });

@@ -16,7 +16,8 @@
     "clean": "rimraf dist",
     "dev": "npm run build-vendor && webpack-dev-server --mode development --config webpack.dev.config.js",
     "deploy": "npm run build-vendor && now",
-    "deploy-prod": "npm run deploy && now alias"
+    "deploy-prod": "npm run deploy && now alias",
+    "lint": "./node_modules/.bin/eslint --fix src"
   },
   "keywords": [],
   "author": "Fouad Matin <m@fouad.org>",
@@ -26,6 +27,9 @@
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "faker": "^4.1.0",
     "glob": "^7.1.2",
     "lodash": "^4.17.5",

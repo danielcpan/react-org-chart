@@ -1,10 +1,10 @@
-const React = require('react')
-const ReactDOM = require('react-dom')
-const OrgChart = require('../react/org-chart')
-const fakeData = require('../utils/fake-data')
+const React = require('react');
+const ReactDOM = require('react-dom');
+const OrgChart = require('../react/org-chart');
+const fakeData = require('../utils/fake-data');
 
-const root = document.getElementById('root')
-const tree = fakeData()
+const root = document.getElementById('root');
+const tree = fakeData();
 
 const props = {
   tree: {
@@ -15,16 +15,15 @@ const props = {
       department: '',
       name: 'Imelda Haley',
       title: 'CEO',
-      totalReports: 5
+      totalReports: 5,
     },
     hasChild: true,
-    children: []
+    children: [],
   },
-  loadChildren: d => {
+  loadChildren: (d) =>
     // this could also just be `return tree.children`
-    return Promise.resolve(tree.children)
-  },
-  lineType: 'curve'
-}
+    Promise.resolve(tree.children),
+  lineType: 'curve',
+};
 
-ReactDOM.render(React.createElement(OrgChart, props, null), root)
+ReactDOM.render(React.createElement(OrgChart, props, null), root);

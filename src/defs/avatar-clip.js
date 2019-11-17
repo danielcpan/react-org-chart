@@ -1,14 +1,14 @@
 const defaultConfig = {
-  borderRadius: 4
-}
+  borderRadius: 4,
+};
 
 module.exports = function defineAvatarClip(svg, id, config = {}) {
   config = {
     ...defaultConfig,
-    ...config
-  }
+    ...config,
+  };
 
-  const defs = svg.append('svg:defs')
+  const defs = svg.append('svg:defs');
 
   defs
     .append('clipPath')
@@ -16,5 +16,5 @@ module.exports = function defineAvatarClip(svg, id, config = {}) {
     .append('circle')
     .attr('cx', 34)
     .attr('cy', 34)
-    .attr('r', 18)
-}
+    .attr('r', 18);
+};
