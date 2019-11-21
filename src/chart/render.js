@@ -2,6 +2,7 @@ const { wrapText, helpers } = require('../utils');
 const renderLines = require('./render-lines');
 const onClick = require('./on-click');
 const iconLink = require('./components/icon-link');
+const settingsIcon = require('./components/settings-icon');
 
 const CHART_NODE_CLASS = 'org-chart-node';
 const PERSON_LINK_CLASS = 'org-chart-person-link';
@@ -10,30 +11,33 @@ const PERSON_TITLE_CLASS = 'org-chart-person-title';
 const PERSON_DEPARTMENT_CLASS = 'org-chart-person-dept';
 const PERSON_REPORTS_CLASS = 'org-chart-person-reports';
 
-const renderNodeCard = (nodeEnter, {
-  svgroot,
-  svg,
-  tree,
-  animationDuration,
-  nodeWidth,
-  nodeHeight,
-  nodePaddingX,
-  nodePaddingY,
-  nodeBorderRadius,
-  backgroundColor,
-  nameColor,
-  titleColor,
-  reportsColor,
-  borderColor,
-  avatarWidth,
-  lineDepthY,
-  treeData,
-  sourceNode,
-  onPersonLinkClick,
-  onMouseOverNode,
-  onMouseOutNode,
-  nodeProps,
-}) => {
+const renderNodeCard = (nodeEnter, config) => {
+  const {
+    svgroot,
+    svg,
+    tree,
+    animationDuration,
+    nodeWidth,
+    nodeHeight,
+    nodePaddingX,
+    nodePaddingY,
+    nodeBorderRadius,
+    backgroundColor,
+    nameColor,
+    titleColor,
+    reportsColor,
+    borderColor,
+    avatarWidth,
+    lineDepthY,
+    treeData,
+    sourceNode,
+    onPersonLinkClick,
+    handleEdit,
+    handleMove,
+    handleAdd,
+    nodeProps,
+  } = config;
+
   // Person Card Shadow
   const cardShadow = nodeEnter
     .append('rect')
@@ -91,8 +95,8 @@ const renderNodeCard = (nodeEnter, {
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
-    .text((d) => `${d.itemMap.deptSOPs.allIds.length} SOPs`);
-    // .text((d) => `${Object.keys(d.SOPIds).length} SOPs`);
+    // .text((d) => `${d.itemMap.deptSOPs.allIds.length} SOPs`);
+    .text((d) => `${d.itemMap.deptSOPIds.length} SOPs`);
 
   // Person's Reports
   const usersText = nodeEnter
@@ -106,8 +110,8 @@ const renderNodeCard = (nodeEnter, {
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
-    .text((d) => `${d.itemMap.deptUsers.allIds.length} Users`);
-    // .text((d) => `${Object.keys(d.userIds).length} Users`);
+    // .text((d) => `${d.itemMap.deptUsers.allIds.length} Users`);
+    .text((d) => `${d.itemMap.deptUserIds.length} Users`);
   // .text(helpers.getTextForTitle)
 
   // Person's Avatar
@@ -136,7 +140,30 @@ const renderNodeCard = (nodeEnter, {
   // .text(helpers.getTextForDepartment)
 
   // Person's Link
-  const nodeLink = nodeEnter
+  const plusLink = nodeEnter
+    .append('a')
+    .attr('class', PERSON_LINK_CLASS)
+  // .attr('xlink:href', d => d.person.link || 'https://lattice.com')
+  // .attr('xlink:href', d => 'https://lattice.com')
+    .on('click', (datum) => {
+      console.log('ADDING NEW NODE!');
+      // console.log('d3.event:', d3.event);
+      d3.event.stopPropagation();
+      // // TODO: fire link click handler
+      if (onPersonLinkClick) {
+        // handleAdd(datum, d3.event);
+      }
+    });
+
+  settingsIcon({
+    svg: plusLink,
+    x: nodeWidth - 28,
+    y: nodeHeight - 66,
+    config,
+  });
+
+  // Person's Link
+  const personLink = nodeEnter
     .append('a')
     .attr('class', PERSON_LINK_CLASS)
   // .attr('xlink:href', d => d.person.link || 'https://lattice.com')
@@ -151,28 +178,10 @@ const renderNodeCard = (nodeEnter, {
     });
 
   iconLink({
-    svg: nodeLink,
+    svg: personLink,
     x: nodeWidth - 28,
     y: nodeHeight - 28,
   });
-
-  // Mouse Event Container
-  // const mouseEventContainer = nodeEnter
-  //   .append('rect')
-  //   .attr('width', nodeWidth)
-  //   .attr('height', nodeHeight)
-  //   .attr('fill', 'transparent')
-  //   .attr('stroke', 'transparent')
-  //   .attr('rx', nodeBorderRadius)
-  //   .attr('ry', nodeBorderRadius)
-  //   .on('mouseover', (datum) => {
-  //     onMouseOverNode(datum, d3.event);
-  //     d3.select(d3.event.target).style('stroke', 'red');
-  //   })
-  //   .on('mouseout', (datum) => {
-  //     onMouseOutNode(datum, d3.event);
-  //     d3.select(d3.event.target).style('stroke', 'transparent');
-  //   });
 };
 
 
@@ -197,8 +206,9 @@ function render(config) {
     treeData,
     sourceNode,
     onPersonLinkClick,
-    onMouseOverNode,
-    onMouseOutNode,
+    handleEdit,
+    handleMove,
+    handleAdd,
     nodeProps,
     collapseAllInitial,
   } = config;

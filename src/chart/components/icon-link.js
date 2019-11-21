@@ -56,5 +56,9 @@ module.exports = function iconLink({ svg, x = 5, y = 5 }) {
     .attr('y', 0)
     .attr('width', 24)
     .attr('height', 24)
-    .attr('fill', 'transparent');
+    .attr('fill', 'transparent')
+    .attr(
+      'transform',
+      'translate(-5,-4)',
+    );
 };

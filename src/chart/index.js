@@ -109,6 +109,7 @@ function init(options) {
   config.svg = svg;
   config.svgroot = svgroot;
   config.render = render;
+  config.isMenuOpen = false;
 
   // // Defined zoom behavior
   const zoom = d3.behavior
