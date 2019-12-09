@@ -17,7 +17,7 @@ const toggleMenu = (d) => {
 const renderMenuOption = ({
   svg: settingsMenu, title, handleClick, config,
 }) => {
-  console.log('config menu:', config);
+  // console.log('config menu:', config);
   const optionContainer = settingsMenu
     .append('g')
     .attr('width', 80)
@@ -50,9 +50,11 @@ const renderMenuOption = ({
       optionBackground.style('cursor', 'default');
     })
     .on('click', (datum) => {
-      console.log('datum:', datum);
-      handleClick(datum, d3.event);
-      toggleMenu(datum);
+      if (datum.isMenuOpen) {
+        // console.log('datum:', datum);
+        handleClick(datum, d3.event);
+        toggleMenu(datum);
+      }
     });
 };
 

@@ -19,7 +19,7 @@ function onClick(config = {}) {
       }
     }
 
-    console.log('datum:', datum);
+    console.log('datum1:', datum);
     // If this person doesn't have children but `hasChild` is true,
     // attempt to load using the `loadChildren` config function
     if (!datum.children && !datum._children && datum.hasChild) {

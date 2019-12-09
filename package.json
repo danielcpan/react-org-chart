@@ -1,11 +1,14 @@
 {
-  "name": "@latticehr/react-org-chart",
+  "name": "@danielcpan/react-org-chart",
   "version": "0.1.1",
   "description": "Simple, high-performance react component for d3 org chart",
-  "repository": "https://github.com/latticehr/react-org-chart.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/latticehr/react-org-chart.git"
+  },
   "main": "dist/index.js",
   "directories": {
-    "example": "src/examples"
+    "example": "examples"
   },
   "files": [
     "dist/index.js"
@@ -17,7 +20,7 @@
     "dev": "npm run build-vendor && webpack-dev-server --mode development --config webpack.dev.config.js",
     "deploy": "npm run build-vendor && now",
     "deploy-prod": "npm run deploy && now alias",
-    "lint": "./node_modules/.bin/eslint --fix src"
+    "lint": "eslint --fix src"
   },
   "keywords": [],
   "author": "Fouad Matin <m@fouad.org>",
@@ -50,5 +53,10 @@
       "env",
       "stage-2"
     ]
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/latticehr/react-org-chart/issues"
+  },
+  "homepage": "https://github.com/latticehr/react-org-chart#readme",
+  "dependencies": {}
 }

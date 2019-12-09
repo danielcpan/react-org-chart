@@ -96,7 +96,7 @@ const renderNodeCard = (nodeEnter, config) => {
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
     // .text((d) => `${d.itemMap.deptSOPs.allIds.length} SOPs`);
-    .text((d) => `${d.itemMap.deptSOPIds.length} SOPs`);
+    .text((d) => `${d.itemMap.SOPIds.length} SOPs`);
 
   // Person's Reports
   const usersText = nodeEnter
@@ -111,7 +111,7 @@ const renderNodeCard = (nodeEnter, config) => {
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
     // .text((d) => `${d.itemMap.deptUsers.allIds.length} Users`);
-    .text((d) => `${d.itemMap.deptUserIds.length} Users`);
+    .text((d) => `${d.itemMap.userIds.length} Users`);
   // .text(helpers.getTextForTitle)
 
   // Person's Avatar
@@ -126,7 +126,7 @@ const renderNodeCard = (nodeEnter, config) => {
   const departmentText = nodeEnter
     .append('text')
   // .attr('class', getDepartmentClass)
-    .attr('x', 34)
+    .attr('x', 33)
     .attr('y', 33)
     .attr('dy', '.9em')
     .style('fill', 'white')

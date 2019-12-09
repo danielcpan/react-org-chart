@@ -5,10 +5,7 @@ const defineAvatarClip = require('../defs/avatar-clip');
 const render = require('./render');
 const renderUpdate = require('./render-update');
 const defaultConfig = require('./config');
-
-module.exports = {
-  init,
-};
+const TreeChart = require('../react/TreeChart');
 
 function init(options) {
   // Merge options with the default config
@@ -150,3 +147,7 @@ function init(options) {
   // Update DOM root height
   d3.select(id).style('height', elemHeight + margin.top + margin.bottom);
 }
+
+module.exports = {
+  init,
+};
