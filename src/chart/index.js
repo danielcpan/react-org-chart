@@ -70,7 +70,13 @@ function init(options) {
     .select(id)
     .append('svg')
     .attr('width', elemWidth)
-    .attr('height', elemHeight);
+    .attr('height', elemHeight)
+    .on('click', (d) => {
+      const allMenus = d3.selectAll('.settings-menu-container')
+        .style('opacity', 0)
+        .style('visibility', 'visible');
+      allMenus[0].forEach(({ __data__ }) => { __data__.isMenuOpen = false; });
+    });
 
   // Add our base svg group to transform when a user zooms/pans
   const svg = svgroot

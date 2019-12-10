@@ -229,6 +229,7 @@ function render(config) {
   const node = svg
     .selectAll(`g.${CHART_NODE_CLASS}`)
     .data(nodes.filter((d) => d.id), (d) => d.id);
+
   const parentNode = sourceNode || treeData;
 
   // Enter any new nodes at the parent's previous position.

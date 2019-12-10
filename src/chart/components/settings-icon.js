@@ -2,13 +2,20 @@
 
 const toggleMenu = (d) => {
   d.isMenuOpen = !d.isMenuOpen;
+  const allMenus = d3.selectAll('.settings-menu-container')
+    .style('visibility', 'hidden')
+    .style('opacity', 0);
+  allMenus[0].forEach(({ __data__ }) => {
+    if (__data__.id !== d.id) __data__.isMenuOpen = false;
+  });
   if (d.isMenuOpen) {
     d3.select(`#settings-menu-${d.id}`).transition()
       .duration(200)
+      .style('visibility', 'visible')
       .style('opacity', 1);
   } else {
-    d3.select(`#settings-menu-${d.id}`).transition()
-      .duration(350)
+    d3.select(`#settings-menu-${d.id}`)
+      .style('visibility', 'hidden')
       .style('opacity', 0);
   }
 };
@@ -17,7 +24,6 @@ const toggleMenu = (d) => {
 const renderMenuOption = ({
   svg: settingsMenu, title, handleClick, config,
 }) => {
-  // console.log('config menu:', config);
   const optionContainer = settingsMenu
     .append('g')
     .attr('width', 80)
@@ -36,22 +42,26 @@ const renderMenuOption = ({
     .attr('x', 10)
     .attr('y', config.height)
     .style('fill', 'black')
-    .style('cursor', 'pointer')
     .style('font-size', 14)
     .text(title);
 
   optionContainer
     .on('mouseover', (d) => {
-      optionBackground.style('fill', config.borderColor);
-      optionBackground.style('cursor', 'pointer');
+      if (d.isMenuOpen) {
+        optionBackground.style('fill', config.borderColor);
+        optionBackground.style('cursor', 'pointer');
+        optionText.style('cursor', 'pointer');
+      }
     })
     .on('mouseout', (d) => {
-      optionBackground.style('fill', config.backgroundColor);
-      optionBackground.style('cursor', 'default');
+      if (d.isMenuOpen) {
+        optionBackground.style('fill', config.backgroundColor);
+        optionBackground.style('cursor', 'default');
+        optionText.style('cursor', 'default');
+      }
     })
     .on('click', (datum) => {
       if (datum.isMenuOpen) {
-        // console.log('datum:', datum);
         handleClick(datum, d3.event);
         toggleMenu(datum);
       }
@@ -105,17 +115,19 @@ module.exports = function iconLink({
 
   const settingsMenu = svg
     .append('g')
+    .attr('class', 'settings-menu-container')
     .attr('id', (d) => `settings-menu-${d.id}`)
     .attr(
       'transform',
       'translate(230, 0)',
     )
+    .style('visibility', 'hidden')
     .style('opacity', 0);
 
   const cardContainer = settingsMenu
     .append('rect')
     .attr('width', 80)
-    .attr('height', 70)
+    .attr('height', 90)
     .attr('fill', config.backgroundColor)
     .attr('stroke', config.borderColor)
     .attr('rx', config.nodeBorderRadius)
@@ -140,6 +152,13 @@ module.exports = function iconLink({
     handleClick: config.handleAdd,
     config: { ...config, height: 60 },
   });
+  renderMenuOption({
+    svg: settingsMenu,
+    title: 'Delete',
+    handleClick: config.handleDelete,
+    config: { ...config, height: 80 },
+  });
+  // }
 
   icon
     .append('rect')
