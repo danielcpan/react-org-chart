@@ -46,12 +46,19 @@ function onClick(config = {}) {
       config.callerMode = 0;
       datum._children = datum.children;
       datum.children = null;
+      d3.selectAll(`#has-child-icon-${datum.id}`).transition()
+        .duration(200)
+        .style('visibility', 'visible')
+        .style('opacity', 1);
     } else {
       // Expand the children
       config.callerNode = datum;
       config.callerMode = 1;
       datum.children = datum._children;
       datum._children = null;
+      d3.select(`#has-child-icon-${datum.id}`)
+        .style('visibility', 'hidden')
+        .style('opacity', 0);
     }
 
     // Pass in the clicked datum as the sourceNode which

@@ -3,6 +3,8 @@ const renderLines = require('./render-lines');
 const onClick = require('./on-click');
 const iconLink = require('./components/icon-link');
 const settingsIcon = require('./components/settings-icon');
+const hasChildIcon = require('./components/has-child-icon');
+const dependencyIcon = require('./components/dependency-icon');
 
 const CHART_NODE_CLASS = 'org-chart-node';
 const PERSON_LINK_CLASS = 'org-chart-person-link';
@@ -36,7 +38,10 @@ const renderNodeCard = (nodeEnter, config) => {
     handleMove,
     handleAdd,
     nodeProps,
+    // viewRoot,
   } = config;
+
+  const isRoot = (d) => d.parentId === treeData.parentId;
 
   // Person Card Shadow
   const cardShadow = nodeEnter
@@ -66,9 +71,14 @@ const renderNodeCard = (nodeEnter, config) => {
     .style('cursor', helpers.getCursorForNode)
     .attr('class', 'box');
 
+  // const namePos = {
+  //   x: nodePaddingX * 1.4 + avatarWidth,
+  //   y: nodePaddingY * 1.6,
+  // };
+
   const namePos = {
-    x: nodePaddingX * 1.4 + avatarWidth,
-    y: nodePaddingY * 1.8,
+    x: nodePaddingX + 8 + avatarWidth,
+    y: nodePaddingY + 8,
   };
 
   // Person's Name
@@ -89,9 +99,9 @@ const renderNodeCard = (nodeEnter, config) => {
     .attr('class', PERSON_REPORTS_CLASS)
     .attr('x', namePos.x)
   // .attr('y', namePos.y + nodePaddingY + heightForTitle)
-    .attr('y', 50)
-    .attr('dy', '.9em')
-    .style('font-size', 14)
+    .attr('y', 82)
+    .attr('dy', '.3em')
+    .style('font-size', 12)
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
@@ -104,9 +114,9 @@ const renderNodeCard = (nodeEnter, config) => {
     .attr('class', PERSON_REPORTS_CLASS)
     .attr('x', 130)
   // .attr('y', namePos.y + nodePaddingY + heightForTitle)
-    .attr('y', 50)
-    .attr('dy', '.9em')
-    .style('font-size', 14)
+    .attr('y', 82)
+    .attr('dy', '.3em')
+    .style('font-size', 12)
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
@@ -118,47 +128,76 @@ const renderNodeCard = (nodeEnter, config) => {
   const avatar = nodeEnter
     .append('circle')
     .attr('cx', 33)
-    .attr('cy', 40)
+    .attr('cy', 33)
     .attr('r', '20')
     .attr('fill', 'gray');
 
+  const getAvatarText = (d) => {
+    if (d.nodeProps.avatarText) return d.nodeProps.avatarText;
+    return d.nodeProps.primaryText
+      .split(' ').slice(0, 2)
+      .map((el) => el.charAt(0).toUpperCase())
+      .join('');
+  };
   // Person's Department
   const departmentText = nodeEnter
     .append('text')
-  // .attr('class', getDepartmentClass)
     .attr('x', 33)
-    .attr('y', 33)
+    .attr('y', 25)
     .attr('dy', '.9em')
     .style('fill', 'white')
     .style('font-weight', 600)
     .style('font-size', 16)
     .attr('text-anchor', 'middle')
-    .text((d) => d.nodeProps.primaryText
-      .split(' ')
-      .map((el) => el.charAt(0).toUpperCase())
-      .join(''));
-  // .text(helpers.getTextForDepartment)
+    .text((d) => getAvatarText(d));
 
-  // Person's Link
-  const plusLink = nodeEnter
+  const nodeId = nodeEnter
+    .append('text')
+    .attr('x', 33)
+    .attr('y', 57)
+    .attr('dy', '.9em')
+    .style('fill', (d) => d.nodeProps.idColor || 'black')
+    .style('font-weight', 600)
+    .style('font-size', 11)
+    .attr('text-anchor', 'middle')
+    .text((d) => `#${d.id}`);
+
+  // const hasDependencySvg = nodeEnter
+  //   .append('a')
+  //   .attr('class', PERSON_LINK_CLASS)
+  //   .attr('id', (d) => `has-child-icon-${d.id}`)
+  //   .style('visibility', (d) => (d.hasChild && !isRoot(d) && !d.children ? 'visible' : 'hidden'));
+
+  // dependencyIcon({
+  //   svg: hasDependencySvg,
+  //   x: nodeWidth - 226,
+  //   y: nodeHeight - 34,
+  //   config,
+  // });
+
+  const hasChildSvg = nodeEnter
     .append('a')
     .attr('class', PERSON_LINK_CLASS)
-  // .attr('xlink:href', d => d.person.link || 'https://lattice.com')
-  // .attr('xlink:href', d => 'https://lattice.com')
-    .on('click', (datum) => {
-      console.log('ADDING NEW NODE!');
-      // console.log('d3.event:', d3.event);
-      d3.event.stopPropagation();
-      // // TODO: fire link click handler
-      if (onPersonLinkClick) {
-        // handleAdd(datum, d3.event);
-      }
-    });
+    .attr('id', (d) => `has-child-icon-${d.id}`)
+    .style('visibility', (d) => (d.hasChild && !isRoot(d) && !d.children ? 'visible' : 'hidden'));
+
+  hasChildIcon({
+    svg: hasChildSvg,
+    x: nodeWidth - 126,
+    y: nodeHeight,
+    config,
+  });
+
+  // Person's Link
+  const settingsLink = nodeEnter
+    .append('a')
+    .attr('class', PERSON_LINK_CLASS)
+    .on('click', () => d3.event.stopPropagation());
 
   settingsIcon({
-    svg: plusLink,
+    svg: settingsLink,
     x: nodeWidth - 28,
-    y: nodeHeight - 66,
+    y: nodeHeight - 90,
     config,
   });
 
@@ -166,10 +205,7 @@ const renderNodeCard = (nodeEnter, config) => {
   const personLink = nodeEnter
     .append('a')
     .attr('class', PERSON_LINK_CLASS)
-  // .attr('xlink:href', d => d.person.link || 'https://lattice.com')
-  // .attr('xlink:href', d => 'https://lattice.com')
     .on('click', (datum) => {
-      console.log('d3.event:', d3.event);
       d3.event.stopPropagation();
       // TODO: fire link click handler
       if (onPersonLinkClick) {
@@ -238,13 +274,9 @@ function render(config) {
     .insert('g')
     .attr('class', CHART_NODE_CLASS)
     .attr('transform', (d) => {
-      // console.log('d:', d);
       if (d.isCollapsed) return;
       return `translate(${parentNode.x0}, ${parentNode.y0})`;
     })
-    // .attr('transform', (d) => {
-    //   if (!collapseAllInitial) { `translate(${parentNode.x0}, ${parentNode.y0})`; }
-    // })
     .on('click', onClick(config));
 
   renderNodeCard(nodeEnter, config);
@@ -285,13 +317,6 @@ function render(config) {
     d.x0 = d.x;
     d.y0 = d.y;
   });
-}
-
-function getDepartmentClass(d) {
-  const { person } = d;
-  const deptClass = person.department ? person.department.toLowerCase() : '';
-
-  return [PERSON_DEPARTMENT_CLASS, deptClass].join(' ');
 }
 
 module.exports = render;

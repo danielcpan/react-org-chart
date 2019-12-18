@@ -1,7 +1,5 @@
 /* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z"/></svg> */
 
-const isRoot = (d) => d.parentId === null;
-
 const toggleMenu = (d) => {
   d.isMenuOpen = !d.isMenuOpen;
   const allMenus = d3.selectAll('.settings-menu-container')
@@ -26,11 +24,13 @@ const toggleMenu = (d) => {
 const renderMenuOption = ({
   svg: settingsMenu, title, handleClick, config,
 }) => {
+  const isRoot = (d) => d.parentId === config.treeData.parentId;
+
   const optionContainer = settingsMenu
     .append('g')
     .attr('width', 80)
     .attr('height', 20)
-    .style('visibility', (d) => (isRoot(d) && title !== 'Add Child' ? 'hidden' : 'visible'));
+    .style('visibility', (d) => (isRoot(d) && !['Add Child', 'Edit'].includes(title) ? 'hidden' : 'visible'));
 
   const optionBackground = optionContainer
     .append('rect')
@@ -39,7 +39,7 @@ const renderMenuOption = ({
     .attr('x', 0)
     .attr('y', config.height - 15)
     .style('fill', config.backgroundColor)
-    .style('visibility', (d) => (isRoot(d) && title !== 'Add Child' ? 'hidden' : 'visible'));
+    .style('visibility', (d) => (isRoot(d) && !['Add Child', 'Edit'].includes(title) ? 'hidden' : 'visible'));
 
   const optionText = optionContainer
     .append('text')
@@ -47,7 +47,7 @@ const renderMenuOption = ({
     .attr('y', config.height)
     .style('fill', 'black')
     .style('font-size', 14)
-    .style('visibility', (d) => (isRoot(d) && title !== 'Add Child' ? 'hidden' : 'visible'))
+    .style('visibility', (d) => (isRoot(d) && !['Add Child', 'Edit'].includes(title) ? 'hidden' : 'visible'))
     .text(title);
 
   optionContainer
@@ -76,6 +76,8 @@ const renderMenuOption = ({
 module.exports = function iconLink({
   svg, x = 5, y = 5, config,
 }) {
+  const isRoot = (d) => d.parentId === config.treeData.parentId;
+
   const container = svg
     .append('g')
     .attr('stroke', 'none')
@@ -132,7 +134,7 @@ module.exports = function iconLink({
   const cardContainer = settingsMenu
     .append('rect')
     .attr('width', 80)
-    .attr('height', (d) => (isRoot(d) ? 30 : 90))
+    .attr('height', (d) => (isRoot(d) ? 50 : 110))
     .attr('fill', config.backgroundColor)
     .attr('stroke', config.borderColor)
     .attr('rx', config.nodeBorderRadius)
@@ -162,6 +164,12 @@ module.exports = function iconLink({
     title: 'Delete',
     handleClick: config.handleDelete,
     config: { ...config, height: 80 },
+  });
+  renderMenuOption({
+    svg: settingsMenu,
+    title: 'Focus',
+    handleClick: config.handleFocus,
+    config: { ...config, height: 100 },
   });
   // }
 
