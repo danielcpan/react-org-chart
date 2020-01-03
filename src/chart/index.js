@@ -23,6 +23,7 @@ function init(options) {
   const {
     id,
     treeData,
+    isViewOnly = true,
     lineType,
     margin,
     nodeWidth,

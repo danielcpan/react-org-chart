@@ -26,11 +26,21 @@ const renderMenuOption = ({
 }) => {
   const isRoot = (d) => d.parentId === config.treeData.parentId;
 
+  const isVisible = (d) => {
+    if (config.isViewOnly) {
+      if (isRoot(d)) return false;
+      const isFocusOption = title === 'Focus';
+      return isFocusOption;
+    }
+    if (isRoot(d)) return (['Add Child', 'Edit'].includes(title));
+    return true;
+  };
+
   const optionContainer = settingsMenu
     .append('g')
     .attr('width', 80)
     .attr('height', 20)
-    .style('visibility', (d) => (isRoot(d) && !['Add Child', 'Edit'].includes(title) ? 'hidden' : 'visible'));
+    .style('visibility', (d) => (!isVisible(d) ? 'hidden' : 'visible'));
 
   const optionBackground = optionContainer
     .append('rect')
@@ -39,7 +49,7 @@ const renderMenuOption = ({
     .attr('x', 0)
     .attr('y', config.height - 15)
     .style('fill', config.backgroundColor)
-    .style('visibility', (d) => (isRoot(d) && !['Add Child', 'Edit'].includes(title) ? 'hidden' : 'visible'));
+    .style('visibility', (d) => (!isVisible(d) ? 'hidden' : 'visible'));
 
   const optionText = optionContainer
     .append('text')
@@ -47,7 +57,7 @@ const renderMenuOption = ({
     .attr('y', config.height)
     .style('fill', 'black')
     .style('font-size', 14)
-    .style('visibility', (d) => (isRoot(d) && !['Add Child', 'Edit'].includes(title) ? 'hidden' : 'visible'))
+    .style('visibility', (d) => (!isVisible(d) ? 'hidden' : 'visible'))
     .text(title);
 
   optionContainer
@@ -77,6 +87,10 @@ module.exports = function iconLink({
   svg, x = 5, y = 5, config,
 }) {
   const isRoot = (d) => d.parentId === config.treeData.parentId;
+  const getCardContainerHeight = (d) => {
+    if (config.isViewOnly) return isRoot(d) ? 0 : 30;
+    return isRoot(d) ? 50 : 110;
+  };
 
   const container = svg
     .append('g')
@@ -97,7 +111,8 @@ module.exports = function iconLink({
     .attr(
       'transform',
       'translate(3, 7.000000) scale(0.25, 0.25) translate(-14, -7.000000)',
-    );
+    )
+    .style('visibility', (d) => (isRoot(d) && config.isViewOnly ? 'hidden' : 'visible'));
 
   settings
     .append('path')
@@ -131,10 +146,10 @@ module.exports = function iconLink({
     .style('visibility', 'hidden')
     .style('opacity', 0);
 
-  const cardContainer = settingsMenu
+  settingsMenu
     .append('rect')
     .attr('width', 80)
-    .attr('height', (d) => (isRoot(d) ? 50 : 110))
+    .attr('height', (d) => (getCardContainerHeight(d)))
     .attr('fill', config.backgroundColor)
     .attr('stroke', config.borderColor)
     .attr('rx', config.nodeBorderRadius)
@@ -169,9 +184,8 @@ module.exports = function iconLink({
     svg: settingsMenu,
     title: 'Focus',
     handleClick: config.handleFocus,
-    config: { ...config, height: 100 },
+    config: { ...config, height: config.isViewOnly ? 20 : 100 },
   });
-  // }
 
   icon
     .append('rect')

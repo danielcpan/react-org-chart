@@ -34,9 +34,7 @@ function onClick(config = {}) {
       const handler = handleChildrenResult(config, datum);
 
       // Check if the result is a promise and render the children
-      if (result.then) {
-        return result.then(handler);
-      }
+      if (result.then) return result.then(handler);
       return handler(result);
     }
 
