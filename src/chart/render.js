@@ -18,6 +18,7 @@ const renderNodeCard = (nodeEnter, config) => {
     nodePaddingX,
     nodePaddingY,
     nodeBorderRadius,
+    hasSettings,
     backgroundColor,
     nameColor,
     titleColor,
@@ -90,27 +91,6 @@ const renderNodeCard = (nodeEnter, config) => {
     .style('fill', titleColor)
     .text((d) => d.nodeProps.secondaryText);
 
-  const reviewDates = ['Next Review: 3/20/20', 'Last Review: 1/20/19'];
-
-  // d.nodeProps.list.forEach((el, idx) => {
-  //   nodeEnter.append('text')
-  //     .attr('class', PERSON_REPORTS_CLASS)
-  //     .attr('x', namePos.x)
-  //     .attr('y', (d) => {
-  //       let y = namePos.y + nodePaddingY + (idx * 12);
-  //       if (d.nodeProps.primaryText.length > 19) y += 18;
-  //       if (d.nodeProps.secondaryText.length > 0) y += 16;
-  //       if (d.nodeProps.secondaryText.length > 19) y += 16;
-  //       return y;
-  //     })
-  //     .attr('dy', '.3em')
-  //     .style('font-size', 11)
-  //     .style('font-weight', 500)
-  //     .style('cursor', 'pointer')
-  //     .style('fill', reportsColor)
-  //     .text(() => `• ${el}`);
-  // });
-
   const firstBulletText = nodeEnter.append('text')
     .attr('class', PERSON_REPORTS_CLASS)
     .attr('x', namePos.x)
@@ -122,7 +102,7 @@ const renderNodeCard = (nodeEnter, config) => {
       return y;
     })
     .attr('dy', '.3em')
-    .style('font-size', 11)
+    .style('font-size', 12)
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
@@ -139,21 +119,27 @@ const renderNodeCard = (nodeEnter, config) => {
       return y;
     })
     .attr('dy', '.3em')
-    .style('font-size', 11)
+    .style('font-size', 12)
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
     .text(({ nodeProps: { secondBullet } }) => (secondBullet ? `• ${secondBullet}` : null));
 
+  const grayBackground = 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Solid_gray.png';
   // Person's Avatar
   const avatar = nodeEnter
-    .append('circle')
-    .attr('cx', 33)
-    .attr('cy', 33)
-    .attr('r', '20')
-    .attr('fill', 'gray');
+    .append('image')
+    .attr('width', avatarWidth)
+    .attr('height', avatarWidth)
+    .attr('x', nodePaddingX)
+    .attr('y', nodePaddingY)
+    .attr('stroke', 'gray')
+    .attr('src', ({ nodeProps: { avatarSrc } }) => (avatarSrc || grayBackground))
+    .attr('xlink:href', ({ nodeProps: { avatarSrc } }) => (avatarSrc || grayBackground))
+    .attr('clip-path', 'url(#avatarClip)');
 
   const getAvatarText = (d) => {
+    if (d.nodeProps.avatarSrc) return null;
     if (d.nodeProps.avatarText) return d.nodeProps.avatarText;
     return d.nodeProps.primaryText
       .split(' ').slice(0, 2)
@@ -196,18 +182,20 @@ const renderNodeCard = (nodeEnter, config) => {
     config,
   });
 
+  if (hasSettings) {
   // Person's Link
-  const settingsLink = nodeEnter
-    .append('a')
-    .attr('class', PERSON_LINK_CLASS)
-    .on('click', () => d3.event.stopPropagation());
+    const settingsLink = nodeEnter
+      .append('a')
+      .attr('class', PERSON_LINK_CLASS)
+      .on('click', () => d3.event.stopPropagation());
 
-  settingsIcon({
-    svg: settingsLink,
-    x: nodeWidth - 28,
-    y: 10,
-    config,
-  });
+    settingsIcon({
+      svg: settingsLink,
+      x: nodeWidth - 28,
+      y: 10,
+      config,
+    });
+  }
 
   // Person's Link
   const personLink = nodeEnter
