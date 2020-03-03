@@ -4,21 +4,15 @@ const onClick = require('./on-click');
 const iconLink = require('./components/icon-link');
 const settingsIcon = require('./components/settings-icon');
 const hasChildIcon = require('./components/has-child-icon');
-const dependencyIcon = require('./components/dependency-icon');
 
 const CHART_NODE_CLASS = 'org-chart-node';
 const PERSON_LINK_CLASS = 'org-chart-person-link';
 const PERSON_NAME_CLASS = 'org-chart-person-name';
 const PERSON_TITLE_CLASS = 'org-chart-person-title';
-const PERSON_DEPARTMENT_CLASS = 'org-chart-person-dept';
 const PERSON_REPORTS_CLASS = 'org-chart-person-reports';
 
 const renderNodeCard = (nodeEnter, config) => {
   const {
-    svgroot,
-    svg,
-    tree,
-    animationDuration,
     nodeWidth,
     nodeHeight,
     nodePaddingX,
@@ -30,15 +24,8 @@ const renderNodeCard = (nodeEnter, config) => {
     reportsColor,
     borderColor,
     avatarWidth,
-    lineDepthY,
     treeData,
-    sourceNode,
     onPersonLinkClick,
-    handleEdit,
-    handleMove,
-    handleAdd,
-    nodeProps,
-    // viewRoot,
   } = config;
 
   const isRoot = (d) => d.parentId === treeData.parentId;
@@ -71,11 +58,6 @@ const renderNodeCard = (nodeEnter, config) => {
     .style('cursor', helpers.getCursorForNode)
     .attr('class', 'box');
 
-  // const namePos = {
-  //   x: nodePaddingX * 1.4 + avatarWidth,
-  //   y: nodePaddingY * 1.6,
-  // };
-
   const namePos = {
     x: nodePaddingX + 8 + avatarWidth,
     y: nodePaddingY + 8,
@@ -93,36 +75,75 @@ const renderNodeCard = (nodeEnter, config) => {
     .style('font-size', 16)
     .text((d) => d.nodeProps.primaryText);
 
-  // Person's Reports
-  const SOPsText = nodeEnter
+  nodeEnter
     .append('text')
+    .attr('class', `${PERSON_TITLE_CLASS} unedited`)
+    .attr('x', namePos.x)
+    .attr('y', (d) => {
+      let y = namePos.y + nodePaddingY + 4;
+      if (d.nodeProps.primaryText.length > 19) y += 16;
+      return y;
+    })
+    .attr('dy', '0.1em')
+    .style('font-size', 14)
+    .style('cursor', 'pointer')
+    .style('fill', titleColor)
+    .text((d) => d.nodeProps.secondaryText);
+
+  const reviewDates = ['Next Review: 3/20/20', 'Last Review: 1/20/19'];
+
+  // d.nodeProps.list.forEach((el, idx) => {
+  //   nodeEnter.append('text')
+  //     .attr('class', PERSON_REPORTS_CLASS)
+  //     .attr('x', namePos.x)
+  //     .attr('y', (d) => {
+  //       let y = namePos.y + nodePaddingY + (idx * 12);
+  //       if (d.nodeProps.primaryText.length > 19) y += 18;
+  //       if (d.nodeProps.secondaryText.length > 0) y += 16;
+  //       if (d.nodeProps.secondaryText.length > 19) y += 16;
+  //       return y;
+  //     })
+  //     .attr('dy', '.3em')
+  //     .style('font-size', 11)
+  //     .style('font-weight', 500)
+  //     .style('cursor', 'pointer')
+  //     .style('fill', reportsColor)
+  //     .text(() => `• ${el}`);
+  // });
+
+  const firstBulletText = nodeEnter.append('text')
     .attr('class', PERSON_REPORTS_CLASS)
     .attr('x', namePos.x)
-  // .attr('y', namePos.y + nodePaddingY + heightForTitle)
-    .attr('y', 82)
+    .attr('y', ({ nodeProps: { primaryText, secondaryText } }) => {
+      let y = namePos.y + nodePaddingY;
+      if (primaryText && primaryText.length > 19) y += 18;
+      if (secondaryText && secondaryText.length > 0) y += 16;
+      if (secondaryText && secondaryText.length > 19) y += 16;
+      return y;
+    })
     .attr('dy', '.3em')
-    .style('font-size', 12)
+    .style('font-size', 11)
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
-    // .text((d) => `${d.itemMap.deptSOPs.allIds.length} SOPs`);
-    .text((d) => `${d.itemMap.SOPIds.length} SOPs`);
+    .text(({ nodeProps: { firstBullet } }) => (firstBullet ? `• ${firstBullet}` : null));
 
-  // Person's Reports
-  const usersText = nodeEnter
-    .append('text')
+  const secondBulletText = nodeEnter.append('text')
     .attr('class', PERSON_REPORTS_CLASS)
-    .attr('x', 130)
-  // .attr('y', namePos.y + nodePaddingY + heightForTitle)
-    .attr('y', 82)
+    .attr('x', namePos.x)
+    .attr('y', ({ nodeProps: { primaryText, secondaryText } }) => {
+      let y = namePos.y + nodePaddingY + 12;
+      if (primaryText && primaryText.length > 19) y += 18;
+      if (secondaryText && secondaryText.length > 0) y += 16;
+      if (secondaryText && secondaryText.length > 19) y += 16;
+      return y;
+    })
     .attr('dy', '.3em')
-    .style('font-size', 12)
+    .style('font-size', 11)
     .style('font-weight', 500)
     .style('cursor', 'pointer')
     .style('fill', reportsColor)
-    // .text((d) => `${d.itemMap.deptUsers.allIds.length} Users`);
-    .text((d) => `${d.itemMap.userIds.length} Users`);
-  // .text(helpers.getTextForTitle)
+    .text(({ nodeProps: { secondBullet } }) => (secondBullet ? `• ${secondBullet}` : null));
 
   // Person's Avatar
   const avatar = nodeEnter
@@ -162,19 +183,6 @@ const renderNodeCard = (nodeEnter, config) => {
     .attr('text-anchor', 'middle')
     .text((d) => `#${d.id}`);
 
-  // const hasDependencySvg = nodeEnter
-  //   .append('a')
-  //   .attr('class', PERSON_LINK_CLASS)
-  //   .attr('id', (d) => `has-child-icon-${d.id}`)
-  //   .style('visibility', (d) => (d.hasChild && !isRoot(d) && !d.children ? 'visible' : 'hidden'));
-
-  // dependencyIcon({
-  //   svg: hasDependencySvg,
-  //   x: nodeWidth - 226,
-  //   y: nodeHeight - 34,
-  //   config,
-  // });
-
   const hasChildSvg = nodeEnter
     .append('a')
     .attr('class', PERSON_LINK_CLASS)
@@ -197,7 +205,7 @@ const renderNodeCard = (nodeEnter, config) => {
   settingsIcon({
     svg: settingsLink,
     x: nodeWidth - 28,
-    y: nodeHeight - 90,
+    y: 10,
     config,
   });
 
@@ -208,9 +216,7 @@ const renderNodeCard = (nodeEnter, config) => {
     .on('click', (datum) => {
       d3.event.stopPropagation();
       // TODO: fire link click handler
-      if (onPersonLinkClick) {
-        onPersonLinkClick(datum, d3.event);
-      }
+      if (onPersonLinkClick) onPersonLinkClick(datum, d3.event);
     });
 
   iconLink({
@@ -223,30 +229,14 @@ const renderNodeCard = (nodeEnter, config) => {
 
 function render(config) {
   const {
-    svgroot,
     svg,
     tree,
     animationDuration,
-    nodeWidth,
-    nodeHeight,
-    nodePaddingX,
-    nodePaddingY,
-    nodeBorderRadius,
     backgroundColor,
-    nameColor,
-    titleColor,
-    reportsColor,
     borderColor,
-    avatarWidth,
     lineDepthY,
     treeData,
     sourceNode,
-    onPersonLinkClick,
-    handleEdit,
-    handleMove,
-    handleAdd,
-    nodeProps,
-    collapseAllInitial,
   } = config;
 
   // Compute the new tree layout.
@@ -306,7 +296,7 @@ function render(config) {
   // Wrap the title texts
   const wrapWidth = 140;
 
-  // svg.selectAll('text.unedited.' + PERSON_TITLE_CLASS).call(wrapText, wrapWidth)
+  svg.selectAll(`text.unedited.${PERSON_TITLE_CLASS}`).call(wrapText, wrapWidth);
   svg.selectAll(`text.unedited.${PERSON_NAME_CLASS}`).call(wrapText, wrapWidth);
 
   // Render lines connecting nodes
