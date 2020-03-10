@@ -62,9 +62,10 @@ function init(options) {
     .nodeSize([nodeWidth + nodeSpacing, nodeHeight + nodeSpacing]);
 
   // Calculate width of a node with expanded children
-  // console.log('TREE DATA:', treeData);
+  console.log('TREE DATA IN THIIISSSS:', treeData);
   const children = treeData.children || treeData._children;
-  const childrenWidth = parseInt(children.length * nodeWidth / 2);
+  console.log('childrennnnnnnn:', children);
+  const childrenWidth = children ? parseInt(children.length * nodeWidth / 2) : 0;
 
   // Add svg root for d3
   const svgroot = d3
