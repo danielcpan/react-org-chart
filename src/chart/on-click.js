@@ -4,9 +4,7 @@ const { collapse } = require('../utils');
 module.exports = onClick;
 
 function onClick(config = {}) {
-  const {
-    treeData, loadChildren, render, onPersonClick,
-  } = config;
+  const { loadChildren, render, onPersonClick } = config;
 
   return (datum) => {
     if (onPersonClick) {
@@ -14,9 +12,7 @@ function onClick(config = {}) {
 
       // If the `onPersonClick` handler returns `false`
       // Cancel the rest of this click handler
-      if (typeof result === 'boolean' && !result) {
-        return;
-      }
+      if (typeof result === 'boolean' && !result) return;
     }
 
     console.log('datum1:', datum);
@@ -78,7 +74,6 @@ function handleChildrenResult(config, datum) {
     };
 
     // Collapse the nested children
-    console.log('COLLAPSING INSIDE HANDLE CHILDREN RESULT');
     children.forEach(collapse);
 
     result.children.forEach((child) => {

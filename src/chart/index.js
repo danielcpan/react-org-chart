@@ -1,11 +1,8 @@
 const d3 = require('d3');
-const { collapse, wrapText, helpers } = require('../utils');
-const defineBoxShadow = require('../defs/box-shadow');
-const defineAvatarClip = require('../defs/avatar-clip');
+const { collapse } = require('../utils');
 const render = require('./render');
 const renderUpdate = require('./render-update');
 const defaultConfig = require('./config');
-const TreeChart = require('../react/TreeChart');
 
 function init(options) {
   // Merge options with the default config
@@ -23,24 +20,19 @@ function init(options) {
   const {
     id,
     treeData,
-    isViewOnly = true,
     lineType,
     margin,
     nodeWidth,
     nodeHeight,
     nodeSpacing,
     shouldResize,
-    nodeProps,
     collapseAllInitial,
   } = config;
 
   // Calculate how many pixel nodes to be spaced based on the
   // type of line that needs to be rendered
-  if (lineType === 'angle') {
-    config.lineDepthY = nodeHeight + 40;
-  } else {
-    config.lineDepthY = nodeHeight + 60;
-  }
+  config.lineDepthY = nodeHeight + 40;
+  if (lineType === 'angle') config.lineDepthY += 20;
 
   // Get the root element
   const elem = document.querySelector(id);
@@ -62,9 +54,7 @@ function init(options) {
     .nodeSize([nodeWidth + nodeSpacing, nodeHeight + nodeSpacing]);
 
   // Calculate width of a node with expanded children
-  console.log('TREE DATA IN THIIISSSS:', treeData);
   const children = treeData.children || treeData._children;
-  console.log('childrennnnnnnn:', children);
   const childrenWidth = children ? parseInt(children.length * nodeWidth / 2) : 0;
 
   // Add svg root for d3
@@ -93,12 +83,6 @@ function init(options) {
         20
       })`,
     );
-
-  // Define box shadow and avatar border radius
-  defineBoxShadow(svgroot, 'boxShadow');
-  defineAvatarClip(svgroot, 'avatarClip', {
-    borderRadius: 40,
-  });
 
   // Center the viewport on initial load
   treeData.x0 = 0;
