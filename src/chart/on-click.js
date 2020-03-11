@@ -3,6 +3,31 @@ const { collapse } = require('../utils');
 
 module.exports = onClick;
 
+const collpaseChildren = ({ config, datum }) => {
+  config.callerMode = 0;
+  datum._children = datum.children;
+  datum.children = null;
+  d3.selectAll(`#has-child-icon-${datum.id}`).transition()
+    .duration(200)
+    .style('visibility', 'visible')
+    .style('opacity', 1);
+};
+
+const expandChildren = ({ config, datum }) => {
+  config.callerMode = 1;
+  datum.children = datum._children;
+  datum._children = null;
+  d3.select(`#has-child-icon-${datum.id}`)
+    .style('visibility', 'hidden')
+    .style('opacity', 0);
+};
+
+const handleCollapseExpand = ({ config, datum }) => {
+  config.callerNode = datum;
+  if (datum.children) collpaseChildren({ config, datum });
+  else expandChildren({ config, datum });
+};
+
 function onClick(config = {}) {
   const { loadChildren, render, onPersonClick } = config;
 
@@ -34,26 +59,7 @@ function onClick(config = {}) {
       return handler(result);
     }
 
-    if (datum.children) {
-      // Collapse the children
-      config.callerNode = datum;
-      config.callerMode = 0;
-      datum._children = datum.children;
-      datum.children = null;
-      d3.selectAll(`#has-child-icon-${datum.id}`).transition()
-        .duration(200)
-        .style('visibility', 'visible')
-        .style('opacity', 1);
-    } else {
-      // Expand the children
-      config.callerNode = datum;
-      config.callerMode = 1;
-      datum.children = datum._children;
-      datum._children = null;
-      d3.select(`#has-child-icon-${datum.id}`)
-        .style('visibility', 'hidden')
-        .style('opacity', 0);
-    }
+    handleCollapseExpand({ config, datum });
 
     // Pass in the clicked datum as the sourceNode which
     // tells the child nodes where to animate in from
@@ -64,22 +70,18 @@ function onClick(config = {}) {
   };
 }
 
+// function handleChildrenResult(config, datum) {
 function handleChildrenResult(config, datum) {
   const { tree, render } = config;
 
   return (children) => {
-    const result = {
-      ...datum,
-      children,
-    };
+    const result = { ...datum, children };
 
     // Collapse the nested children
     children.forEach(collapse);
 
     result.children.forEach((child) => {
-      if (!tree.nodes(datum)[0]._children) {
-        tree.nodes(datum)[0]._children = [];
-      }
+      if (!tree.nodes(datum)[0]._children) tree.nodes(datum)[0]._children = [];
 
       child.x = datum.x;
       child.y = datum.y;
@@ -89,19 +91,7 @@ function handleChildrenResult(config, datum) {
       tree.nodes(datum)[0]._children.push(child);
     });
 
-    if (datum.children) {
-      // Collapse the children
-      config.callerNode = datum;
-      config.callerMode = 0;
-      datum._children = datum.children;
-      datum.children = null;
-    } else {
-      // Expand the children
-      config.callerNode = null;
-      config.callerMode = 1;
-      datum.children = datum._children;
-      datum._children = null;
-    }
+    handleCollapseExpand({ config, datum });
 
     // Pass in the newly rendered datum as the sourceNode
     // which tells the child nodes where to animate in from
