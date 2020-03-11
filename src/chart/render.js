@@ -17,7 +17,7 @@ const renderNodeCard = (nodeEnter, config) => {
     onPersonLinkClick,
   } = config;
 
-  const isRoot = (d) => d.parentId === treeData.id;
+  const isRoot = (d) => d.id === treeData.id;
 
   nodeEnter.append('foreignObject').attr('width', 240).attr('height', 120)
     .html((d) => renderItem(d));
