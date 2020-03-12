@@ -89,7 +89,7 @@ function init(options) {
   treeData.y0 = elemHeight / 2;
 
   // Collapse all of the children on initial load
-  if (collapseAllInitial && treeData.children) {
+  if (collapseAllInitial && treeData.children && treeData.children.length) {
     treeData.children.forEach(collapse);
   }
 

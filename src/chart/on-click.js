@@ -40,10 +40,8 @@ function onClick(config = {}) {
       if (typeof result === 'boolean' && !result) return;
     }
 
-    console.log('datum1:', datum);
-    // If this person doesn't have children but `hasChild` is true,
-    // attempt to load using the `loadChildren` config function
-    if (!datum.children && !datum._children && datum.hasChild) {
+    const hasLoadedChildren = datum.children || datum._children;
+    if (!hasLoadedChildren && datum.hasChild) {
       if (!loadChildren) {
         console.error(
           'react-org-chart.onClick: loadChildren() not found in config',
