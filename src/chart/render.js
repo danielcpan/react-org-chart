@@ -169,9 +169,17 @@ function render(config) {
 
   const wrapWidth = 140;
 
-  svg
-    .selectAll(`text.unedited.${PERSON_TITLE_CLASS}`)
-    .call(wrapText, wrapWidth);
+  if (config.wrapPrimary) {
+    svg
+      .selectAll(`text.unedited.${PERSON_NAME_CLASS}`)
+      .call(wrapText, wrapWidth);
+  }
+
+  if (config.wrapSecondary) {
+    svg
+      .selectAll(`text.unedited.${PERSON_TITLE_CLASS}`)
+      .call(wrapText, wrapWidth);
+  }
 
   // Render lines connecting nodes
   renderLines(config);

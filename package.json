@@ -1,6 +1,6 @@
 {
   "name": "@danielcpan/react-tree-chart",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Simple, high-performance react component for d3 org chart",
   "repository": {
     "type": "git",
