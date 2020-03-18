@@ -1,26 +1,62 @@
+const wrapText = require('./wrap-text');
 const renderLines = require('./render-lines');
 const onClick = require('./on-click');
 const iconLink = require('./components/icon-link');
 const settingsIcon = require('./components/settings-icon');
 const hasChildIcon = require('./components/has-child-icon');
 
+// const CHART_NODE_CLASS = 'org-chart-node';
+// const PERSON_LINK_CLASS = 'org-chart-person-link';
+
 const CHART_NODE_CLASS = 'org-chart-node';
 const PERSON_LINK_CLASS = 'org-chart-person-link';
+const PERSON_NAME_CLASS = 'org-chart-person-name';
+const PERSON_TITLE_CLASS = 'org-chart-person-title';
+const PERSON_REPORTS_CLASS = 'org-chart-person-reports';
 
 const renderNodeCard = (nodeEnter, config) => {
+  // const {
+  //   isIE = true,
+  //   nodeWidth,
+  //   nodeHeight,
+  //   hasSettings,
+  //   treeData,
+  //   renderItem,
+  //   onPersonLinkClick,
+  // } = config;
+
   const {
+    isIE = true,
     nodeWidth,
     nodeHeight,
+    nodePaddingX,
+    nodePaddingY,
+    nodeBorderRadius,
     hasSettings,
+    backgroundColor,
+    nameColor,
+    titleColor,
+    reportsColor,
+    borderColor,
+    avatarWidth,
     treeData,
-    renderItem,
     onPersonLinkClick,
+    renderItem,
+    renderItemIE,
   } = config;
+
+  console.log('CONFIG:', config);
 
   const isRoot = (d) => d.id === treeData.id;
 
-  nodeEnter.append('foreignObject').attr('width', 240).attr('height', 120)
-    .html((d) => renderItem(d));
+  // if (!isIE) renderItemIE({ nodeEnter, config });
+  // else {
+  //   nodeEnter.append('foreignObject').attr('width', 240).attr('height', 120)
+  //     .html((d) => renderItem(d));
+  // }
+
+  renderItem({ svg: nodeEnter, config, wrapText });
+
 
   const hasChildSvg = nodeEnter
     .append('a')
@@ -130,6 +166,12 @@ function render(config) {
 
   // Update the links
   svg.selectAll('path.link').data(links, (d) => d.target.id);
+
+  const wrapWidth = 140;
+
+  svg
+    .selectAll(`text.unedited.${PERSON_TITLE_CLASS}`)
+    .call(wrapText, wrapWidth);
 
   // Render lines connecting nodes
   renderLines(config);
