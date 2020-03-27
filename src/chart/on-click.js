@@ -32,6 +32,7 @@ function onClick(config = {}) {
   const { loadChildren, render, onPersonClick } = config;
 
   return (datum) => {
+    console.log('clicked:', datum);
     if (onPersonClick) {
       const result = onPersonClick(datum, d3.event);
 

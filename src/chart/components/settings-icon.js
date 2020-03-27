@@ -23,22 +23,23 @@ const renderMenuOption = ({
   svg: settingsMenu, title, handleClick, config,
 }) => {
   const isRoot = (d) => d.parentId === config.treeData.parentId;
+  const isLeaf = (d) => !d.hasChild;
 
-  const isVisible = (d) => {
+  const isAllowed = (d) => {
     if (config.isViewOnly) {
       if (isRoot(d)) return false;
       const isFocusOption = title === 'Focus';
       return isFocusOption;
     }
     if (isRoot(d)) return (['Add Child', 'Edit'].includes(title));
+    if (!isLeaf(d)) return (title !== 'Delete');
     return true;
   };
 
   const optionContainer = settingsMenu
     .append('g')
     .attr('width', 80)
-    .attr('height', 20)
-    .style('visibility', (d) => (!isVisible(d) ? 'hidden' : 'visible'));
+    .attr('height', 20);
 
   const optionBackground = optionContainer
     .append('rect')
@@ -46,8 +47,7 @@ const renderMenuOption = ({
     .attr('height', 20)
     .attr('x', 0)
     .attr('y', config.height - 15)
-    .style('fill', config.backgroundColor)
-    .style('visibility', (d) => (!isVisible(d) ? 'hidden' : 'visible'));
+    .style('fill', config.backgroundColor);
 
   const optionText = optionContainer
     .append('text')
@@ -55,26 +55,25 @@ const renderMenuOption = ({
     .attr('y', config.height)
     .style('fill', 'black')
     .style('font-size', 14)
-    .style('visibility', (d) => (!isVisible(d) ? 'hidden' : 'visible'))
+    .style('opacity', (d) => (!isAllowed(d) ? 0.5 : 1))
     .text(title);
 
   optionContainer
     .on('mouseover', (d) => {
       if (d.isMenuOpen) {
         optionBackground.style('fill', config.borderColor);
-        optionBackground.style('cursor', 'pointer');
-        optionText.style('cursor', 'pointer');
+        optionBackground.style('cursor', (!isAllowed(d) ? 'not-allowed' : 'default'));
+        optionText.style('cursor', (!isAllowed(d) ? 'not-allowed' : 'default'));
       }
     })
     .on('mouseout', (d) => {
       if (d.isMenuOpen) {
         optionBackground.style('fill', config.backgroundColor);
-        optionBackground.style('cursor', 'default');
-        optionText.style('cursor', 'default');
       }
     })
     .on('click', (datum) => {
-      if (datum.isMenuOpen) {
+      if (datum.isMenuOpen && isAllowed(datum)) {
+        optionBackground.style('fill', config.backgroundColor);
         handleClick(datum, d3.event);
         toggleMenu(datum);
       }
@@ -85,10 +84,6 @@ module.exports = function iconLink({
   svg, x = 5, y = 5, config,
 }) {
   const isRoot = (d) => d.parentId === config.treeData.parentId;
-  const getCardContainerHeight = (d) => {
-    if (config.isViewOnly) return isRoot(d) ? 0 : 30;
-    return isRoot(d) ? 50 : 110;
-  };
 
   const container = svg
     .append('g')
@@ -147,7 +142,7 @@ module.exports = function iconLink({
   settingsMenu
     .append('rect')
     .attr('width', 80)
-    .attr('height', (d) => (getCardContainerHeight(d)))
+    .attr('height', 90)
     .attr('fill', config.backgroundColor)
     .attr('stroke', config.borderColor)
     .attr('rx', config.nodeBorderRadius)
@@ -168,21 +163,15 @@ module.exports = function iconLink({
   });
   renderMenuOption({
     svg: settingsMenu,
-    title: 'Move',
-    handleClick: config.handleMove,
-    config: { ...config, height: 60 },
-  });
-  renderMenuOption({
-    svg: settingsMenu,
     title: 'Delete',
     handleClick: config.handleDelete,
-    config: { ...config, height: 80 },
+    config: { ...config, height: 60 },
   });
   renderMenuOption({
     svg: settingsMenu,
     title: 'Focus',
     handleClick: config.handleFocus,
-    config: { ...config, height: config.isViewOnly ? 20 : 100 },
+    config: { ...config, height: 80 },
   });
 
   icon

@@ -12,48 +12,17 @@ const CHART_NODE_CLASS = 'org-chart-node';
 const PERSON_LINK_CLASS = 'org-chart-person-link';
 const PERSON_NAME_CLASS = 'org-chart-person-name';
 const PERSON_TITLE_CLASS = 'org-chart-person-title';
-const PERSON_REPORTS_CLASS = 'org-chart-person-reports';
 
 const renderNodeCard = (nodeEnter, config) => {
-  // const {
-  //   isIE = true,
-  //   nodeWidth,
-  //   nodeHeight,
-  //   hasSettings,
-  //   treeData,
-  //   renderItem,
-  //   onPersonLinkClick,
-  // } = config;
-
   const {
-    isIE = true,
     nodeWidth,
     nodeHeight,
-    nodePaddingX,
-    nodePaddingY,
-    nodeBorderRadius,
     hasSettings,
-    backgroundColor,
-    nameColor,
-    titleColor,
-    reportsColor,
-    borderColor,
-    avatarWidth,
     treeData,
     onPersonLinkClick,
     renderItem,
-    renderItemIE,
   } = config;
-
-  console.log('CONFIG:', config);
-
   const isRoot = (d) => d.id === treeData.id;
-
-  // if (!isIE) renderItemIE({ nodeEnter, config });
-  // else {
-  //   nodeEnter.append('foreignObject').attr('width', 240).attr('height', 120)
-  //     .html((d) => renderItem(d));
-  // }
 
   renderItem({ svg: nodeEnter, config, wrapText });
 
@@ -91,7 +60,6 @@ const renderNodeCard = (nodeEnter, config) => {
     .attr('class', PERSON_LINK_CLASS)
     .on('click', (datum) => {
       d3.event.stopPropagation();
-      // TODO: fire link click handler
       if (onPersonLinkClick) onPersonLinkClick(datum, d3.event);
     });
 
